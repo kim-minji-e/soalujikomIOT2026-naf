@@ -3,50 +3,147 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Masuk | Monitoring IoT</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Login | Monitoring IoT</title>
   <link rel="stylesheet" href="css/login.css" />
 </head>
+
 <body class="login-body">
+
   <div class="login-wrapper">
+
+    <!-- FORM LOGIN -->
     <div class="login-card">
+
       <div class="login-brand">
-        <img src="img/logo.png" alt="Logo" />
-        <h1>Selamat Datang Kembali</h1>
-        <p>Masuk untuk mengakses dashboard monitoring Anda</p>
+        <img src="img/logo.png" alt="Logo">
+        <h1>Monitoring IoT</h1>
+        <p>Masuk untuk mengakses dashboard monitoring perangkat</p>
       </div>
 
-      <form id="loginForm" class="login-form">
+      <form class="login-form" id="loginForm">
+
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="username" placeholder="nama@email.com" required />
+          <label>Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Masukkan email"
+            required
+          >
         </div>
-        <div class="form-group password-group">
-          <label for="password">Password</label>
+
+        <div class="form-group">
+          <label>Password</label>
           <div class="input-wrapper">
-            <input type="password" id="password" placeholder="••••••••" required />
-            <button type="button" class="toggle-pass-btn" onclick="togglePassword()">👁️</button>
+            <input
+              type="password"
+              id="password"
+              placeholder="Masukkan password"
+              required
+            >
+            <button
+              type="button"
+              class="toggle-pass-btn"
+              id="togglePassword"
+            >
+              👁️
+            </button>
           </div>
         </div>
+
         <div class="form-row">
           <label class="checkbox">
-            <input type="checkbox" /> Ingat saya
+            <input type="checkbox">
+            Ingat saya
           </label>
-          <a href="#" class="link">Lupa password?</a>
+
+          <a href="#" class="link">
+            Lupa Password?
+          </a>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Masuk</button>
-        <p id="loginMessage" class="form-message"></p>
-        <p class="form-footer">Belum punya akun? <a href="#" class="link">Daftar di sini</a></p>
+
+        <button type="submit" class="btn-primary">
+          Masuk ke Dashboard
+        </button>
+
+        <div id="loginMessage" class="form-message"></div>
+
       </form>
+
+      <div class="form-footer">
+        © 2026 Monitoring IoT System
+      </div>
+
     </div>
 
+    <!-- PANEL KANAN -->
     <div class="login-art">
       <div class="art-content">
-        <h2>Monitoring <br/>Lebih Cerdas</h2>
-        <p>Pantau seluruh sensor IoT Anda dalam satu dashboard yang elegan dan modern.</p>
+        <h2>
+          Smart Monitoring
+          <br>
+          & Device Control
+        </h2>
+
+        <p>
+          Pantau suhu, cahaya, dan perangkat IoT secara realtime
+          melalui dashboard modern yang cepat, aman, dan mudah digunakan.
+        </p>
+
+        <div style="
+          margin-top:35px;
+          display:flex;
+          justify-content:center;
+          gap:15px;
+          flex-wrap:wrap;
+        ">
+
+          <div style="
+            background:rgba(255,255,255,.15);
+            backdrop-filter:blur(10px);
+            padding:12px 18px;
+            border-radius:14px;
+            font-size:14px;
+          ">
+            🌡 Sensor Suhu
+          </div>
+
+          <div style="
+            background:rgba(255,255,255,.15);
+            backdrop-filter:blur(10px);
+            padding:12px 18px;
+            border-radius:14px;
+            font-size:14px;
+          ">
+            ☀ Sensor Cahaya
+          </div>
+
+          <div style="
+            background:rgba(255,255,255,.15);
+            backdrop-filter:blur(10px);
+            padding:12px 18px;
+            border-radius:14px;
+            font-size:14px;
+          ">
+            ⚡ Relay Control
+          </div>
+
+        </div>
       </div>
     </div>
+
   </div>
+
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
 
   <script type="module" src="js/auth.js"></script>
 </body>

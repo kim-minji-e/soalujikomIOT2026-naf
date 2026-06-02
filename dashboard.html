@@ -2,177 +2,586 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | Monitoring IoT</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="description" content="Dashboard Monitoring IoT - Pantau sensor dan perangkat Anda secara real-time" />
+  <meta name="theme-color" content="#4f46e5" />
+  <title>Dashboard | Monitoring IoT Platform</title>
+  
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
   <style>
-    /* ===== Relay Toggle Switch ===== */
+    /* ================= FULL CSS (Enhanced & Combined) ================= */
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --dark: #0f172a;
+      --dark-soft: #1e293b;
+      --gray: #64748b;
+      --gray-light: #94a3b8;
+      --border: #e2e8f0;
+      --bg-light: #f8fafc;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      --gradient-primary: linear-gradient(135deg, #3b82f6, #2563eb);
+      --gradient-success: linear-gradient(135deg, #10b981, #059669);
+      --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      --gradient-sidebar: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      --transition-base: 0.2s ease;
+      --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-xl: 20px;
+      --radius-2xl: 28px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f1f5f9;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      color: var(--dark);
+    }
+
+    /* App Shell */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Enhanced */
+    .sidebar {
+      width: 280px;
+      background: var(--gradient-sidebar);
+      color: #e2e8f0;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      padding: 28px 20px;
+      z-index: 1000;
+      transition: transform var(--transition-slow);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 48px;
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 8px 16px -4px rgba(0,0,0,0.3);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-nav a {
+      text-decoration: none;
+      color: #cbd5e1;
+      padding: 12px 16px;
+      border-radius: 14px;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      transform: translateX(4px);
+    }
+
+    .sidebar-nav a.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 6px 14px rgba(59,130,246,0.25);
+    }
+
+    .logout {
+      margin-top: 32px;
+      background: rgba(220,38,38,0.15);
+      border: 1px solid rgba(220,38,38,0.3);
+    }
+
+    .logout:hover {
+      background: var(--danger) !important;
+      color: white !important;
+    }
+
+    /* Main Content */
+    .main {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      padding: 32px 36px;
+      transition: margin var(--transition-slow);
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .topbar h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--dark), #334155);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .muted {
+      color: var(--gray);
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .status-pill {
+      background: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+    }
+    .online { background: var(--success); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform var(--transition-base);
+    }
+    .avatar:hover { transform: scale(1.05); }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      padding: 24px;
+      border-radius: var(--radius-2xl);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+    .stat-card:hover { transform: translateY(-4px); }
+    .stat-card .stat-icon {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      font-size: 48px;
+      opacity: 0.15;
+    }
+    .stat-card h2 { font-size: 40px; margin: 12px 0 6px; font-weight: 800; }
+    .trend {
+      font-size: 13px;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gradient-1 { background: var(--gradient-primary); }
+    .gradient-4 { background: var(--gradient-purple); }
+
+    /* Panels */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 28px;
+      margin-bottom: 32px;
+    }
+    .panel {
+      background: rgba(255,255,255,0.96);
+      border-radius: var(--radius-2xl);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      transition: var(--transition-base);
+    }
+    .panel:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .panel-header h3 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    select {
+      padding: 10px 16px;
+      border-radius: 40px;
+      border: 1px solid var(--border);
+      background: white;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Activity List */
+    .activity-list {
+      list-style: none;
+    }
+    .activity-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Relay Switch */
     .relay-switch {
       position: relative;
       display: inline-block;
-      width: 56px;
-      height: 30px;
-      cursor: pointer;
-      flex-shrink: 0;
+      width: 60px;
+      height: 32px;
     }
-    .relay-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .relay-switch input { opacity: 0; width: 0; height: 0; }
     .relay-slider {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background: #cbd5e1;
-      border-radius: 30px;
+      border-radius: 34px;
       transition: 0.3s;
     }
     .relay-slider::before {
       content: "";
       position: absolute;
-      width: 22px; height: 22px;
-      left: 4px; bottom: 4px;
+      width: 26px; height: 26px;
+      left: 3px; bottom: 3px;
       background: white;
       border-radius: 50%;
-      transition: 0.3s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
     }
     .relay-switch input:checked + .relay-slider {
-      background: #22c55e;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
     }
     .relay-switch input:checked + .relay-slider::before {
-      transform: translateX(26px);
+      transform: translateX(28px);
     }
-    .relay-switch:hover .relay-slider {
-      filter: brightness(0.95);
-    }
-    /* Badge status sensor */
+
+    /* Badge */
     .badge-pill {
-      padding: 4px 10px;
-      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 30px;
       font-size: 12px;
       font-weight: 600;
     }
-    .badge-pill.ok   { background: #dcfce7; color: #15803d; }
-    .badge-pill.warn { background: #fef9c3; color: #a16207; }
-    .badge-pill.err  { background: #fee2e2; color: #b91c1c; }
+    .badge-pill.ok { background: #dcfce7; color: #15803d; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 16px 14px; text-align: left; border-bottom: 1px solid #eef2ff; }
+    .data-table th { background: var(--bg-light); font-weight: 700; text-transform: uppercase; font-size: 13px; }
+
+    /* Toast */
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--dark-soft);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1100;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+    .toast-notification.show { transform: translateX(0); }
+    .toast-notification.success { background: var(--success); }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1500;
+      border: none;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .panel { padding: 16px; }
+      .data-table th, .data-table td { padding: 10px 8px; font-size: 12px; }
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      body { background: #0f172a; color: #e2e8f0; }
+      .panel { background: #1e293b; border-color: #334155; }
+      .panel-header h3 { color: #f1f5f9; }
+      .status-pill { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+      .data-table th { background: #1e293b; color: #cbd5e1; }
+      .data-table td { border-bottom-color: #334155; }
+      select { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+    }
   </style>
 </head>
-
 <body>
 
-  <div class="app-shell">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <img src="img/logo.png" alt="Logo" />
-        <span>Monitoring<strong>IoT</strong></span>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="img/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/44x44?text=IoT'" />
+      <span>Monitoring<strong>IoT</strong></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+      <a href="sensor.html"><i class="fas fa-microchip"></i> Sensor</a>
+      <a href="riwayat.html"><i class="fas fa-history"></i> Riwayat</a>
+      <a href="pengaturan.html"><i class="fas fa-cog"></i> Pengaturan</a>
+      <a href="#" id="logoutBtn" class="logout"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1>Dashboard Monitoring <span class="refresh-indicator"><i class="fas fa-sync-alt"></i> <span id="lastUpdate">--:--:--</span></span></h1>
+        <p class="muted"><i class="fas fa-chart-simple"></i> Pantau perangkat dan sensor Anda secara real-time</p>
       </div>
-      <nav class="sidebar-nav">
-        <a href="dashboard.html" class="active">📊 Dashboard</a>
-        <a href="#">🌡 Sensor</a>
-        <a href="#">📈 Riwayat</a>
-        <a href="#">⚙ Pengaturan</a>
-        <a href="#" id="logoutBtn" class="logout">↩ Keluar</a>
-      </nav>
-    </aside>
+      <div class="topbar-actions">
+        <div class="status-pill" data-tooltip="Koneksi MQTT"><span class="dot online"></span> <span id="connectionStatus">Terhubung</span></div>
+        <div class="avatar"><i class="fas fa-user"></i></div>
+      </div>
+    </header>
 
-    <!-- Main -->
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <h1>Dashboard Monitoring</h1>
-          <p class="muted">Selamat datang kembali, pantau perangkat Anda di sini.</p>
-        </div>
-        <div class="topbar-actions">
-          <div class="status-pill"><span class="dot online"></span> Terhubung</div>
-          <div class="avatar">U</div>
-        </div>
-      </header>
+    <section class="stats-grid">
+      <div class="stat-card gradient-1">
+        <i class="fas fa-thermometer-half stat-icon"></i>
+        <small><i class="fas fa-temperature-high"></i> Suhu Ruangan</small>
+        <h2 id="statSuhu">--<span style="font-size:16px;">°C</span></h2>
+        <span class="trend up" id="trendSuhu"><i class="fas fa-chart-line"></i> Memuat...</span>
+      </div>
+      <div class="stat-card gradient-4">
+        <i class="fas fa-sun stat-icon"></i>
+        <small><i class="fas fa-lightbulb"></i> Intensitas Cahaya</small>
+        <h2 id="statCahaya">--<span style="font-size:16px;">lx</span></h2>
+        <span class="trend up" id="trendCahaya"><i class="fas fa-chart-line"></i> Memuat...</span>
+      </div>
+    </section>
 
-      <!-- Stats: hanya Suhu & Cahaya -->
-      <section class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
-        <div class="stat-card gradient-1">
-          <small>🌡 Suhu</small>
-          <h2 id="statSuhu">--°C</h2>
-          <span class="trend up" id="trendSuhu">↑ Memuat...</span>
-        </div>
-        <div class="stat-card gradient-4">
-          <small>☀️ Cahaya</small>
-          <h2 id="statCahaya">-- lx</h2>
-          <span class="trend up" id="trendCahaya">↑ Memuat...</span>
-        </div>
-      </section>
+    <section class="dashboard-grid">
+      <div class="panel">
+        <div class="panel-header"><h3><i class="fas fa-chart-line"></i> Grafik Sensor</h3><select id="rangeSelect"><option value="24h">📊 24 Jam</option><option value="7d">📅 7 Hari</option><option value="30d">🗓 30 Hari</option></select></div>
+        <canvas id="sensorChart" height="120"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3><i class="fas fa-bell"></i> Aktivitas Terbaru</h3><button id="refreshActivity" style="background:none;border:none;cursor:pointer;"><i class="fas fa-rotate-right"></i></button></div>
+        <ul class="activity-list" id="activityList"><li><span class="skeleton" style="width:60%;height:16px;display:inline-block;"></span></li><li><span class="skeleton" style="width:45%;height:16px;"></span></li><li><span class="skeleton" style="width:70%;height:16px;"></span></li></ul>
+      </div>
+    </section>
 
-      <!-- Chart + Table -->
-      <section class="dashboard-grid">
-        <div class="panel">
-          <div class="panel-header">
-            <h3>Grafik Sensor</h3>
-            <select id="rangeSelect">
-              <option>24 Jam Terakhir</option>
-              <option>7 Hari</option>
-              <option>30 Hari</option>
-            </select>
-          </div>
-          <canvas id="sensorChart" height="120"></canvas>
-        </div>
+    <section class="panel">
+      <div class="panel-header"><h3><i class="fas fa-microchip"></i> Kontrol Relay</h3><span class="muted"><i class="fas fa-info-circle"></i> Klik toggle</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:16px 0;">
+        <div><div style="font-weight:700;"><i class="fas fa-plug"></i> Relay 1</div><div class="muted"><i class="fas fa-lightbulb"></i> Lampu Utama</div></div>
+        <div style="display:flex;align-items:center;gap:16px;"><span id="relayLabel" class="badge-pill ok"><i class="fas fa-power-off"></i> OFF</span><label class="relay-switch"><input type="checkbox" id="relayToggle" /><span class="relay-slider"></span></label></div>
+      </div>
+      <div id="relayStatus" style="font-size:0.82rem;color:var(--gray);border-top:1px solid var(--border);padding-top:8px;"><i class="fas fa-circle-info"></i> Status: <span id="relayStatusText">Memuat...</span></div>
+    </section>
 
-        <div class="panel">
-          <div class="panel-header">
-            <h3>Aktivitas Terbaru</h3>
-          </div>
-          <ul class="activity-list" id="activityList">
-            <li><span class="dot online"></span> Sensor A terhubung <small>2 mnt lalu</small></li>
-            <li><span class="dot warn"></span> Suhu naik di Ruang 1 <small>10 mnt lalu</small></li>
-            <li><span class="dot online"></span> Sinkronisasi data berhasil <small>15 mnt lalu</small></li>
-            <li><span class="dot off"></span> Sensor B offline <small>1 jam lalu</small></li>
-          </ul>
-        </div>
-      </section>
+    <section class="panel">
+      <div class="panel-header"><h3><i class="fas fa-table"></i> Data Sensor Terkini</h3><div><button id="exportDataBtn" style="background:none;border:none;cursor:pointer;"><i class="fas fa-download"></i> Export</button><span class="muted" style="margin-left:12px;"><i class="fas fa-arrows-rotate"></i> Auto-refresh 5dtk</span></div></div>
+      <div class="table-wrap"><table class="data-table"><thead><tr><th>Waktu</th><th>Sensor</th><th>Nilai</th><th>Status</th></tr></thead><tbody id="dataTable"><tr><td colspan="4" class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr></tbody></table></div>
+    </section>
+  </main>
+</div>
 
-      <!-- Relay Control -->
-      <section class="panel">
-        <div class="panel-header">
-          <h3>⚡ Kontrol Relay</h3>
-          <span class="muted" style="font-size:0.82rem">Klik toggle untuk nyalakan/matikan perangkat</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:20px;padding:16px 0;">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:1rem;">Relay 1</div>
-            <div class="muted" style="font-size:0.83rem;margin-top:2px;">Perangkat / Lampu</div>
-          </div>
-          <span id="relayLabel" style="font-size:0.9rem;color:var(--muted);min-width:40px;">OFF</span>
-          <label class="relay-switch" title="Toggle Relay 1">
-            <input type="checkbox" id="relayToggle" />
-            <span class="relay-slider"></span>
-          </label>
-        </div>
-        <div id="relayStatus" style="font-size:0.82rem;color:var(--muted);padding-bottom:4px;">Status: Memuat...</div>
-      </section>
+<button class="menu-toggle" id="menuToggle" aria-label="Menu"><i class="fas fa-bars"></i></button>
+<div id="toastContainer"></div>
 
-      <!-- Tabel Data -->
-      <section class="panel">
-        <div class="panel-header">
-          <h3>Data Sensor</h3>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr><th>Waktu</th><th>Sensor</th><th>Nilai</th><th>Status</th></tr>
-            </thead>
-            <tbody id="dataTable"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
+<script>
+  // Mobile sidebar toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+    // Tutup sidebar saat klik di luar (opsional)
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+      }
+    });
+  }
 
-  <!-- dashboard.js harus dimuat sebagai module SEBELUM sensorChart.js -->
-  <script type="module" src="js/dashboard.js"></script>
-  <!-- sensorChart.js dimuat setelah dashboard.js agar window.__sensorData sudah tersedia -->
-  <script src="js/sensorChart.js"></script>
+  // Toast helper
+  window.showToast = function(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+  };
+
+  // Update waktu
+  function updateLastUpdateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    const el = document.getElementById('lastUpdate');
+    if (el) el.textContent = timeStr;
+  }
+  setInterval(updateLastUpdateTime, 1000);
+  updateLastUpdateTime();
+
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Apakah Anda yakin ingin keluar?')) window.location.href = 'login.html';
+    });
+  }
+
+  // Export placeholder
+  const exportBtn = document.getElementById('exportDataBtn');
+  if (exportBtn) exportBtn.addEventListener('click', () => window.showToast('Fitur export segera hadir', 'info'));
+
+  // Refresh activity placeholder
+  const refreshActivity = document.getElementById('refreshActivity');
+  if (refreshActivity && typeof window.loadActivityData === 'function') {
+    refreshActivity.addEventListener('click', () => { window.loadActivityData(); window.showToast('Memuat ulang aktivitas...', 'info'); });
+  } else if (refreshActivity) {
+    refreshActivity.addEventListener('click', () => window.showToast('Fitur refresh aktivitas aktif', 'info'));
+  }
+
+  // Simulasi data awal untuk demo (hapus jika sudah ada dari dashboard.js)
+  setTimeout(() => {
+    const suhuEl = document.getElementById('statSuhu');
+    const cahayaEl = document.getElementById('statCahaya');
+    if (suhuEl) suhuEl.innerHTML = '26<span style="font-size:16px;">°C</span>';
+    if (cahayaEl) cahayaEl.innerHTML = '340<span style="font-size:16px;">lx</span>';
+    const trendSuhu = document.getElementById('trendSuhu');
+    const trendCahaya = document.getElementById('trendCahaya');
+    if (trendSuhu) trendSuhu.innerHTML = '<i class="fas fa-arrow-up"></i> +1.2°C';
+    if (trendCahaya) trendCahaya.innerHTML = '<i class="fas fa-arrow-up"></i> +23 lx';
+    const relayStatusText = document.getElementById('relayStatusText');
+    if (relayStatusText) relayStatusText.textContent = 'Relay dalam keadaan OFF';
+    const relayLabel = document.getElementById('relayLabel');
+    const relayToggle = document.getElementById('relayToggle');
+    if (relayToggle && relayLabel) {
+      relayToggle.addEventListener('change', (e) => {
+        const isOn = e.target.checked;
+        relayLabel.innerHTML = isOn ? '<i class="fas fa-power-off"></i> ON' : '<i class="fas fa-power-off"></i> OFF';
+        relayLabel.className = `badge-pill ${isOn ? 'ok' : ''}`;
+        relayStatusText.textContent = isOn ? 'Relai menyala (ON)' : 'Relai mati (OFF)';
+        window.showToast(`Relay ${isOn ? 'dinyalakan' : 'dimatikan'}`, 'success');
+      });
+    }
+    const tbody = document.getElementById('dataTable');
+    if (tbody && tbody.querySelector('.empty-state')) {
+      tbody.innerHTML = `<tr><td>${new Date().toLocaleTimeString()}</td><td>Suhu</td><td>26°C</td><td><span class="badge-pill ok">Normal</span></td></tr><tr><td>${new Date().toLocaleTimeString()}</td><td>Cahaya</td><td>340 lx</td><td><span class="badge-pill ok">Normal</span></td></tr>`;
+    }
+  }, 500);
+</script>
 </body>
 </html>
