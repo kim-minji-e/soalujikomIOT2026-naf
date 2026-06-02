@@ -42,23 +42,18 @@
       <section class="stats-grid">
         <div class="stat-card gradient-1">
           <small>Suhu</small>
-          <h2 id="statSuhu">--°C</h2>
+          <h2 id="statSuhu">--<span style="font-size:16px;">°C</span></h2>
           <span class="trend up">↑ Stabil</span>
-        </div>
-        <div class="stat-card gradient-2">
-          <small>Kelembapan</small>
-          <h2 id="statKelembapan">--%</h2>
-          <span class="trend up">↑ Normal</span>
-        </div>
-        <div class="stat-card gradient-3">
-          <small>Tekanan</small>
-          <h2 id="statTekanan">-- hPa</h2>
-          <span class="trend down">↓ Turun tipis</span>
         </div>
         <div class="stat-card gradient-4">
           <small>Cahaya</small>
-          <h2 id="statCahaya">-- lx</h2>
+          <h2 id="statCahaya">--<span style="font-size:16px;">lx</span></h2>
           <span class="trend up">↑ Cerah</span>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+          <small>Relay 1</small>
+          <h2 id="relayStatus">--</h2>
+          <span class="trend" id="relayTrend">Status</span>
         </div>
       </section>
 
@@ -88,9 +83,34 @@
     </main>
   </div>
 
-  <script type="module" src="js/dashboard.js"></script>
-  <script>
-    // Isi tabel sensor dari data dummy / Firebase
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // Auth guard
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = 'login.html';
+    });
+
+    // Logout handler
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (confirm('🚪 Apakah Anda yakin ingin keluar? Semua sesi akan berakhir.')) {
+          try {
+            await signOut(auth);
+            window.location.href = 'login.html';
+          } catch (err) {
+            console.error('Logout error:', err);
+            window.location.href = 'login.html';
+          }
+        }
+      });
+    }
+
+    // Fungsi update UI
     function populateSensorTable(data) {
       const tbody = document.getElementById('sensorTable');
       const now = new Date().toLocaleTimeString('id-ID');
@@ -112,14 +132,65 @@
       `).join('');
     }
 
-    // Load dummy data sebagai fallback
-    fetch('data/dummy.json').then(r => r.json()).then(data => {
-      populateSensorTable(data);
-      document.getElementById('statSuhu').textContent = (data.suhu ?? '--') + '°C';
-      document.getElementById('statKelembapan').textContent = (data.kelembapan ?? '--') + '%';
-      document.getElementById('statTekanan').textContent = (data.tekanan ?? '--') + ' hPa';
-      document.getElementById('statCahaya').textContent = (data.cahaya ?? '--') + ' lx';
-    }).catch(() => {});
+    function updateStats(data) {
+      // Suhu
+      const suhu = data.suhu ?? '--';
+      document.getElementById('statSuhu').textContent = suhu + '°C';
+      
+      // Cahaya
+      const cahaya = data.cahaya ?? '--';
+      document.getElementById('statCahaya').textContent = cahaya + ' lx';
+    }
+
+    // Fallback dummy data
+    async function loadDummy() {
+      try {
+        const res = await fetch('data/dummy.json');
+        const data = await res.json();
+        updateStats(data);
+        populateSensorTable(data);
+      } catch (e) {
+        console.warn('Tidak bisa memuat data dummy:', e);
+      }
+    }
+
+    // Dengarkan data dari Firebase
+    const sensorRef = ref(db, 'sensor');
+    onValue(sensorRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        updateStats(data);
+        populateSensorTable(data);
+      } else {
+        loadDummy();
+      }
+    }, () => {
+      // Error: fallback ke dummy
+      loadDummy();
+    });
+
+    // Dengarkan Relay dari Firebase
+    const relayRef = ref(db, 'relay/1');
+    onValue(relayRef, (snapshot) => {
+      const val = snapshot.val();
+      const isOn = val === 1 || val === true || val === '1';
+      
+      const relayStatusEl = document.getElementById('relayStatus');
+      const relayTrendEl = document.getElementById('relayTrend');
+      
+      if (relayStatusEl) {
+        relayStatusEl.textContent = isOn ? '🟢 ON' : '🔴 OFF';
+        relayStatusEl.style.color = isOn ? '#10b981' : '#ef4444';
+      }
+      if (relayTrendEl) {
+        relayTrendEl.textContent = isOn ? '✓ Menyala' : '✗ Mati';
+        relayTrendEl.className = 'trend ' + (isOn ? 'up' : 'down');
+      }
+    }, () => {
+      // Error fallback
+      const relayStatusEl = document.getElementById('relayStatus');
+      if (relayStatusEl) relayStatusEl.textContent = '🔴 OFF';
+    });
   </script>
 </body>
 </html>

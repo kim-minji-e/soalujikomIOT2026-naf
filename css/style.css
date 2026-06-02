@@ -254,25 +254,15 @@
     font-size:4rem;
     line-height:1.1;
     margin-bottom:25px;
+    color: transparent;
   }
-
-  .gradient-text{
-    background:
-      linear-gradient(
-        135deg,
-        #60a5fa,
-        #a78bfa
-      );
 
   .gradient-text{
     background: linear-gradient(135deg,#60a5fa,#a78bfa);
-
     background-clip:text;
     -webkit-background-clip:text;
-
     color:transparent;
     -webkit-text-fill-color:transparent;
-  }
   }
 
   .hero-text p{
@@ -421,6 +411,53 @@
 
   .section-header p{
     color:#94a3b8;
+  }
+
+  /* Interactive hover effects */
+  .nav-links a,
+  .btn,
+  .feature-card,
+  .mini-card,
+  .dashboard-box,
+  .about-img img,
+  .data-table tr:hover td,
+  .badge,
+  .login-btn {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .nav-links a:hover {
+    color:#ffffff;
+    transform: translateY(-2px);
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .dashboard-box:hover,
+  .feature-card:hover,
+  .mini-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 60px rgba(15,23,42,0.18);
+  }
+
+  .about-img img:hover {
+    transform: scale(1.03);
+  }
+
+  .data-table tr:hover td {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .section-header h2,
+  .panel-header h3 {
+    transition: transform 0.25s ease;
+  }
+
+  .section-header h2:hover,
+  .panel-header h3:hover {
+    transform: translateX(2px);
   }
 
   /* ================= FEATURES ================= */

@@ -9,8 +9,15 @@ onAuthStateChanged(auth, (user) => {
 
 document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
   e.preventDefault();
-  await signOut(auth);
-  window.location.href = 'login.html';
+  if (confirm('🚪 Apakah Anda yakin ingin keluar? Semua sesi akan berakhir.')) {
+    try {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    } catch (err) {
+      console.error('Logout error:', err);
+      window.location.href = 'login.html';
+    }
+  }
 });
 
 // ====================================

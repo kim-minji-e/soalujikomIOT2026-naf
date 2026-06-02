@@ -14,6 +14,12 @@ if (form) {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
 
+    if (!email || !password) {
+      message.textContent = 'Email dan password harus diisi.';
+      message.className = 'form-message error';
+      return;
+    }
+
     message.textContent = 'Memproses...';
     message.className = 'form-message';
 
@@ -23,9 +29,19 @@ if (form) {
       message.className = 'form-message success';
       setTimeout(() => (window.location.href = 'dashboard.html'), 800);
     } catch (err) {
-      message.textContent = 'Email atau password salah.';
-      message.className = 'form-message error';
       console.error(err);
+      let errorText = 'Email atau password salah.';
+      if (err.code === 'auth/user-not-found') {
+        errorText = 'Akun tidak ditemukan. Pastikan email sudah terdaftar.';
+      } else if (err.code === 'auth/wrong-password') {
+        errorText = 'Password salah. Coba lagi dengan benar.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorText = 'Format email tidak valid.';
+      } else if (err.code === 'auth/network-request-failed') {
+        errorText = 'Gagal terhubung. Periksa jaringan internet Anda.';
+      }
+      message.textContent = `${errorText} (${err.code})`;
+      message.className = 'form-message error';
     }
   });
 }

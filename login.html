@@ -23,7 +23,7 @@
       <form class="login-form" id="loginForm">
 
         <div class="form-group">
-          <label>Email</label>
+          <label for="email">Email</label>
           <input
             type="email"
             id="email"
@@ -33,7 +33,7 @@
         </div>
 
         <div class="form-group">
-          <label>Password</label>
+          <label for="password">Password</label>
           <div class="input-wrapper">
             <input
               type="password"
@@ -45,6 +45,7 @@
               type="button"
               class="toggle-pass-btn"
               id="togglePassword"
+              aria-label="Tampilkan atau sembunyikan password"
             >
               👁️
             </button>
@@ -52,8 +53,8 @@
         </div>
 
         <div class="form-row">
-          <label class="checkbox">
-            <input type="checkbox">
+          <label class="checkbox" for="rememberMe">
+            <input type="checkbox" id="rememberMe">
             Ingat saya
           </label>
 
@@ -62,7 +63,7 @@
           </a>
         </div>
 
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="login-btn">
           Masuk ke Dashboard
         </button>
 
@@ -90,45 +91,11 @@
           melalui dashboard modern yang cepat, aman, dan mudah digunakan.
         </p>
 
-        <div style="
-          margin-top:35px;
-          display:flex;
-          justify-content:center;
-          gap:15px;
-          flex-wrap:wrap;
-        ">
-
-          <div style="
-            background:rgba(255,255,255,.15);
-            backdrop-filter:blur(10px);
-            padding:12px 18px;
-            border-radius:14px;
-            font-size:14px;
-          ">
-            🌡 Sensor Suhu
-          </div>
-
-          <div style="
-            background:rgba(255,255,255,.15);
-            backdrop-filter:blur(10px);
-            padding:12px 18px;
-            border-radius:14px;
-            font-size:14px;
-          ">
-            ☀ Sensor Cahaya
-          </div>
-
-          <div style="
-            background:rgba(255,255,255,.15);
-            backdrop-filter:blur(10px);
-            padding:12px 18px;
-            border-radius:14px;
-            font-size:14px;
-          ">
-            ⚡ Relay Control
-          </div>
-
-        </div>
+        <ul class="art-features">
+          <li>🌡 Sensor Suhu</li>
+          <li>☀ Sensor Cahaya</li>
+          <li>⚡ Relay Control</li>
+        </ul>
       </div>
     </div>
 
