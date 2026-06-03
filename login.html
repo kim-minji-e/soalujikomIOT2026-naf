@@ -2,116 +2,986 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Monitoring IoT</title>
-  <link rel="stylesheet" href="css/login.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="description" content="Login - Monitoring IoT Platform" />
+  <meta name="theme-color" content="#3b82f6" />
+  <title>Login | Monitoring IoT Platform</title>
+  
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <style>
+    /* ================= SAME THEME AS DASHBOARD ================= */
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --dark: #0f172a;
+      --dark-soft: #1e293b;
+      --gray: #64748b;
+      --gray-light: #94a3b8;
+      --border: #e2e8f0;
+      --bg-light: #f8fafc;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      --gradient-primary: linear-gradient(135deg, #3b82f6, #2563eb);
+      --gradient-success: linear-gradient(135deg, #10b981, #059669);
+      --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      --radius-xl: 20px;
+      --radius-2xl: 28px;
+      --transition-base: 0.2s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.05)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+      background-size: cover;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);
+      }
+    }
+
+    /* Login Container */
+    .login-container {
+      width: 100%;
+      max-width: 1300px;
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Glass Card */
+    .login-card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-xl), 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      transition: var(--transition-base);
+      backdrop-filter: blur(10px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .login-card {
+        background: rgba(30, 41, 59, 0.98);
+      }
+    }
+
+    /* Left Side - Form */
+    .login-form-side {
+      flex: 1.2;
+      padding: 56px 48px;
+      min-width: 340px;
+    }
+
+    /* Logo Area */
+    .logo-area {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: var(--shadow-lg);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .logo-icon i {
+      font-size: 38px;
+      color: white;
+    }
+
+    .logo-area h1 {
+      font-size: 32px;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .logo-area p {
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-group label {
+        color: #e2e8f0;
+      }
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-light);
+      font-size: 18px;
+      transition: color var(--transition-base);
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 15px 16px 15px 48px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-size: 15px;
+      color: var(--dark);
+      font-family: 'Inter', sans-serif;
+      transition: all var(--transition-base);
+      outline: none;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .input-wrapper input:focus + i {
+      color: var(--primary);
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--gray-light);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .input-wrapper input {
+        background: #0f172a;
+        border-color: #334155;
+        color: #f1f5f9;
+      }
+      .input-wrapper input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+      }
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--gray-light);
+      cursor: pointer;
+      font-size: 18px;
+      transition: all var(--transition-base);
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .toggle-password:hover {
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Form Row */
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 28px 0 32px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--gray);
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .checkbox:hover {
+      color: var(--dark);
+    }
+
+    .forgot-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all var(--transition-base);
+    }
+
+    .forgot-link:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+      transform: translateX(2px);
+    }
+
+    /* Button */
+    .btn-login {
+      width: 100%;
+      background: var(--gradient-primary);
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-login:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .btn-login.loading {
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .btn-login.loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Message */
+    .form-message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 12px;
+      min-height: 48px;
+      font-weight: 500;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-message.error {
+      background: linear-gradient(135deg, #fef2f2, #fee2e2);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+    }
+
+    .form-message.success {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-message.error {
+        background: rgba(239, 68, 68, 0.15);
+        border-left-color: var(--danger);
+      }
+      .form-message.success {
+        background: rgba(16, 185, 129, 0.15);
+        border-left-color: var(--success);
+      }
+    }
+
+    /* Footer */
+    .form-footer {
+      text-align: center;
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      color: var(--gray);
+      font-size: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-footer {
+        border-top-color: #334155;
+      }
+    }
+
+    /* Right Side - Hero */
+    .login-hero {
+      flex: 0.9;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 56px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content h2 {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.3;
+      color: white;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .hero-content p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    /* Feature Badges */
+    .feature-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 10px 18px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-base);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .badge i {
+      font-size: 14px;
+    }
+
+    .badge:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    /* Demo Hint */
+    .demo-hint {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray);
+      padding: 10px;
+      background: var(--bg-light);
+      border-radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .demo-hint {
+        background: rgba(15, 23, 42, 0.5);
+      }
+    }
+
+    .demo-hint span {
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--transition-base);
+    }
+
+    .demo-hint span:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .login-form-side {
+        padding: 48px 36px;
+      }
+      .login-hero {
+        padding: 48px 32px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .login-form-side {
+        padding: 40px 32px;
+      }
+      .login-hero {
+        padding: 40px 28px;
+      }
+      .hero-content h2 {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+      .login-form-side {
+        padding: 36px 28px;
+        min-width: auto;
+      }
+      .hero-content h2 {
+        font-size: 24px;
+      }
+      .stats {
+        gap: 30px;
+      }
+      .stat-number {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .login-card {
+        flex-direction: column;
+      }
+      .login-hero {
+        order: -1;
+      }
+      .feature-badges {
+        gap: 8px;
+      }
+      .badge {
+        padding: 8px 14px;
+        font-size: 11px;
+      }
+      .stats {
+        gap: 24px;
+      }
+    }
+  </style>
 </head>
+<body>
 
-<body class="login-body">
-
-  <div class="login-wrapper">
-
-    <!-- FORM LOGIN -->
-    <div class="login-card">
-
-      <div class="login-brand">
-        <img src="img/logo.png" alt="Logo">
+<div class="login-container">
+  <div class="login-card">
+    <!-- Left Side - Login Form -->
+    <div class="login-form-side">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fas fa-microchip"></i>
+        </div>
         <h1>Monitoring IoT</h1>
-        <p>Masuk untuk mengakses dashboard monitoring perangkat</p>
+        <p>Platform monitoring perangkat pintar terpercaya</p>
       </div>
 
-      <form class="login-form" id="loginForm">
-
+      <form id="loginForm">
         <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Masukkan email"
-            required
-          >
+          <label for="email">Alamat Email</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope"></i>
+            <input 
+              type="email" 
+              id="email" 
+              placeholder="contoh@perusahaan.com" 
+              autocomplete="email"
+              required
+            >
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">Kata Sandi</label>
           <div class="input-wrapper">
-            <input
-              type="password"
-              id="password"
-              placeholder="Masukkan password"
+            <i class="fas fa-lock"></i>
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="Masukkan kata sandi Anda" 
+              autocomplete="current-password"
               required
             >
-            <button
-              type="button"
-              class="toggle-pass-btn"
-              id="togglePassword"
-              aria-label="Tampilkan atau sembunyikan password"
-            >
-              👁️
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility">
+              <i class="far fa-eye"></i>
             </button>
           </div>
         </div>
 
         <div class="form-row">
-          <label class="checkbox" for="rememberMe">
-            <input type="checkbox" id="rememberMe">
-            Ingat saya
+          <label class="checkbox">
+            <input type="checkbox" id="rememberCheckbox">
+            <span>Ingat saya</span>
           </label>
-
-          <a href="#" class="link">
-            Lupa Password?
-          </a>
+          <a href="#" class="forgot-link" id="forgotLink">Lupa password?</a>
         </div>
 
-        <button type="submit" class="login-btn">
-          Masuk ke Dashboard
+        <button type="submit" class="btn-login" id="submitBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Masuk ke Dashboard</span>
         </button>
 
         <div id="loginMessage" class="form-message"></div>
-
+        
+        <div class="demo-hint">
+          <i class="fas fa-info-circle"></i> Demo: 
+          <span id="fillDemo">admin@iot.com / admin123</span>
+          <span style="margin: 0 4px">•</span>
+          <span id="fillDemo2">user@iot.com / iot2026</span>
+        </div>
       </form>
 
       <div class="form-footer">
-        © 2026 Monitoring IoT System
+        <i class="fas fa-shield-alt"></i> Sistem terenkripsi & aman
+        <br>
+        © 2026 Monitoring IoT Platform | Versi 2.0
       </div>
-
     </div>
 
-    <!-- PANEL KANAN -->
-    <div class="login-art">
-      <div class="art-content">
+    <!-- Right Side - Hero Section -->
+    <div class="login-hero">
+      <div class="hero-content">
         <h2>
           Smart Monitoring
           <br>
           & Device Control
         </h2>
-
         <p>
-          Pantau suhu, cahaya, dan perangkat IoT secara realtime
+          Pantau suhu, cahaya, dan kendalikan perangkat IoT secara realtime 
           melalui dashboard modern yang cepat, aman, dan mudah digunakan.
         </p>
+        
+        <div class="feature-badges">
+          <div class="badge">
+            <i class="fas fa-temperature-high"></i>
+            Sensor Suhu
+          </div>
+          <div class="badge">
+            <i class="fas fa-sun"></i>
+            Sensor Cahaya
+          </div>
+          <div class="badge">
+            <i class="fas fa-microchip"></i>
+            Relay Control
+          </div>
+          <div class="badge">
+            <i class="fas fa-chart-line"></i>
+            Real-time
+          </div>
+        </div>
 
-        <ul class="art-features">
-          <li>🌡 Sensor Suhu</li>
-          <li>☀ Sensor Cahaya</li>
-          <li>⚡ Relay Control</li>
-        </ul>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Monitoring</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Perangkat</div>
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
+</div>
 
-  <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const password = document.getElementById('password');
+<script>
+  (function() {
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const emailInput = document.getElementById('email');
+    const loginForm = document.getElementById('loginForm');
+    const messageDiv = document.getElementById('loginMessage');
+    const submitBtn = document.getElementById('submitBtn');
+    const rememberCheckbox = document.getElementById('rememberCheckbox');
+    const fillDemo = document.getElementById('fillDemo');
+    const fillDemo2 = document.getElementById('fillDemo2');
 
-    togglePassword.addEventListener('click', () => {
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
-      togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
+    // Toggle password visibility
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        const icon = toggleBtn.querySelector('i');
+        icon.className = type === 'password' ? 'far fa-eye' : 'far fa-eye-slash';
+      });
+    }
+
+    // Fill demo credentials
+    if (fillDemo) {
+      fillDemo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emailInput.value = 'admin@iot.com';
+        passwordInput.value = 'admin123';
+        showMessage('✅ Demo admin credentials telah diisi', false);
+        // Trigger input event for any listeners
+        emailInput.dispatchEvent(new Event('input'));
+        passwordInput.dispatchEvent(new Event('input'));
+      });
+    }
+
+    if (fillDemo2) {
+      fillDemo2.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emailInput.value = 'user@iot.com';
+        passwordInput.value = 'iot2026';
+        showMessage('✅ Demo user credentials telah diisi', false);
+        emailInput.dispatchEvent(new Event('input'));
+        passwordInput.dispatchEvent(new Event('input'));
+      });
+    }
+
+    function showMessage(msg, isError = true) {
+      messageDiv.textContent = msg;
+      messageDiv.className = 'form-message';
+      messageDiv.classList.add(isError ? 'error' : 'success');
+      
+      if (!isError) {
+        setTimeout(() => {
+          if (messageDiv.textContent === msg) {
+            messageDiv.textContent = '';
+            messageDiv.className = 'form-message';
+          }
+        }, 4000);
+      }
+    }
+
+    // Load stored credentials
+    function loadStoredCredentials() {
+      const storedEmail = localStorage.getItem('iot_rem_email');
+      const storedPass = localStorage.getItem('iot_rem_pass');
+      const rememberFlag = localStorage.getItem('iot_rem_flag');
+      
+      if (rememberFlag === 'true' && storedEmail && storedPass) {
+        emailInput.value = storedEmail;
+        passwordInput.value = storedPass;
+        rememberCheckbox.checked = true;
+      }
+    }
+
+    // Save remember me
+    function persistRememberMe(email, password, remember) {
+      if (remember) {
+        localStorage.setItem('iot_rem_email', email);
+        localStorage.setItem('iot_rem_pass', password);
+        localStorage.setItem('iot_rem_flag', 'true');
+      } else {
+        localStorage.removeItem('iot_rem_email');
+        localStorage.removeItem('iot_rem_pass');
+        localStorage.setItem('iot_rem_flag', 'false');
+      }
+    }
+
+    // Validation
+    function validateInputs(email, password) {
+      if (!email.trim() || !password.trim()) {
+        showMessage('❌ Email dan password harus diisi!');
+        return false;
+      }
+      const emailPattern = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        showMessage('📧 Format email tidak valid. Contoh: nama@domain.com');
+        return false;
+      }
+      if (password.length < 4) {
+        showMessage('🔐 Password minimal 4 karakter');
+        return false;
+      }
+      return true;
+    }
+
+    // Simulate login API with better security
+    async function performLogin(email, password) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const validCredentials = [
+            { email: 'admin@iot.com', pass: 'admin123', role: 'admin', name: 'Administrator' },
+            { email: 'user@iot.com', pass: 'iot2026', role: 'user', name: 'User Biasa' },
+            { email: 'operator@monitoring.com', pass: 'monitor123', role: 'operator', name: 'Operator' }
+          ];
+          const matched = validCredentials.find(cred => cred.email === email && cred.pass === password);
+          
+          if (matched) {
+            resolve({ 
+              success: true, 
+              message: `✅ Selamat datang, ${matched.name}! Mengarahkan ke dashboard...`, 
+              token: 'jwt_token_' + Date.now(),
+              user: matched
+            });
+          } else {
+            reject({ 
+              success: false, 
+              message: '❌ Email atau password salah. Gunakan:\n• admin@iot.com / admin123\n• user@iot.com / iot2026'
+            });
+          }
+        }, 1000);
+      });
+    }
+
+    // Redirect ke dashboard
+    function redirectToDashboard() {
+      // Simpan sesi login
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('userEmail', emailInput.value.trim());
+      sessionStorage.setItem('loginTime', new Date().toISOString());
+      
+      // Redirect ke dashboard
+      window.location.href = 'dashboard.html';
+    }
+
+    // Handle submit
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const remember = rememberCheckbox.checked;
+      
+      messageDiv.className = 'form-message';
+      
+      if (!validateInputs(email, password)) return;
+      
+      // Loading state
+      const originalBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner"></i><span>Memproses...</span>';
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      
+      try {
+        const result = await performLogin(email, password);
+        if (result.success) {
+          persistRememberMe(email, password, remember);
+          showMessage(result.message, false);
+          sessionStorage.setItem('iot_token', result.token);
+          sessionStorage.setItem('iot_user', email);
+          sessionStorage.setItem('userRole', result.user.role);
+          sessionStorage.setItem('userName', result.user.name);
+          
+          // Redirect after delay
+          setTimeout(() => {
+            redirectToDashboard();
+          }, 1500);
+        }
+      } catch (err) {
+        showMessage(err.message);
+        submitBtn.innerHTML = originalBtnHTML;
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
     });
-  </script>
 
-  <script type="module" src="js/auth.js"></script>
+    // Forgot password handler with better UX
+    const forgotLink = document.getElementById('forgotLink');
+    if (forgotLink) {
+      forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showMessage('🔐 Silakan hubungi administrator sistem untuk reset password Anda. Email: support@iotplatform.com', false);
+      });
+    }
+
+    // Clear message on input with debounce
+    let inputTimeout;
+    const clearMessageOnInput = () => {
+      if (inputTimeout) clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        if (messageDiv.textContent) messageDiv.textContent = '';
+      }, 500);
+    };
+    
+    emailInput.addEventListener('input', clearMessageOnInput);
+    passwordInput.addEventListener('input', clearMessageOnInput);
+    
+    // Load stored credentials on page load
+    loadStoredCredentials();
+
+    // Cek jika sudah login, redirect ke dashboard
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      // Optional: add a small delay to prevent immediate redirect on page refresh
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 100);
+    }
+  })();
+</script>
 </body>
 </html>
