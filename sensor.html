@@ -2,195 +2,798 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Data Sensor | Monitoring IoT</title>
   <meta name="description" content="Halaman monitoring data sensor realtime dari semua perangkat IoT yang terhubung." />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+  
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #60a5fa;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --dark: #0f172a;
+      --dark-soft: #1e293b;
+      --gray: #64748b;
+      --gray-light: #94a3b8;
+      --border: #e2e8f0;
+      --bg-light: #f8fafc;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+      --gradient-primary: linear-gradient(135deg, #3b82f6, #2563eb);
+      --gradient-success: linear-gradient(135deg, #10b981, #059669);
+      --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      --gradient-orange: linear-gradient(135deg, #f59e0b, #d97706);
+      --gradient-sidebar: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      --gradient-pink: linear-gradient(135deg, #ec4899, #be185d);
+      --gradient-cyan: linear-gradient(135deg, #06b6d4, #0891b2);
+      --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-xl: 20px;
+      --radius-2xl: 28px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-animation span {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(59,130,246,0.08);
+      border-radius: 50%;
+      animation: floatBg 20s infinite;
+    }
+
+    @keyframes floatBg {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      50% { opacity: 0.5; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* App Shell */
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 270px;
+      background: var(--gradient-sidebar);
+      color: #e2e8f0;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      padding: 28px 20px;
+      z-index: 100;
+      transition: transform var(--transition-base);
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-brand .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-brand .logo-icon i {
+      font-size: 24px;
+      color: white;
+    }
+
+    .sidebar-brand span {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #a855f7);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .sidebar-brand span strong { background: none; color: #a855f7; -webkit-background-clip: unset; }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: #cbd5e1;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all var(--transition-base);
+      font-size: 15px;
+    }
+
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.1); color: white; transform: translateX(4px); }
+    .sidebar-nav a.active { 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    }
+
+    .logout {
+      margin-top: 40px;
+      background: rgba(239,68,68,0.15);
+    }
+    .logout:hover { background: #ef4444 !important; }
+
+    /* Main Content */
+    .main {
+      margin-left: 270px;
+      width: calc(100% - 270px);
+      padding: 28px 36px;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .topbar h1 {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0f172a, #3b82f6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .muted { color: var(--gray); font-size: 14px; margin-top: 4px; }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .status-pill:hover { transform: scale(0.98); background: #f8fafc; }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .online { background: var(--success); animation: pulse 2s infinite; }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+    .avatar:hover { transform: scale(1.05) rotate(5deg); }
+
+    /* Stats Cards - Colorful */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      padding: 24px;
+      border-radius: var(--radius-2xl);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-base);
+      cursor: pointer;
+    }
+
+    .stat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+
+    .stat-card .stat-icon {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      font-size: 55px;
+      opacity: 0.15;
+      transition: all var(--transition-base);
+    }
+
+    .stat-card:hover .stat-icon { transform: scale(1.1); opacity: 0.25; }
+
+    .stat-card h2 { font-size: 42px; margin: 12px 0 6px; font-weight: 800; letter-spacing: -1px; }
+
+    .trend {
+      font-size: 13px;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .gradient-1 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .gradient-4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .gradient-relay { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+
+    /* Panel */
+    .panel {
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-2xl);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+      transition: all var(--transition-base);
+    }
+
+    .panel:hover { box-shadow: var(--shadow-xl); transform: translateY(-3px); }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .panel-header h3 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+
+    .badge-pill {
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all var(--transition-base);
+    }
+    .badge-pill.ok { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #15803d; }
+    .badge-pill.warning { background: linear-gradient(135deg, #fef9c3, #fde047); color: #854d0e; }
+    .badge-pill.err { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
+    .badge-pill.info { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius-xl); }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 16px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table th { background: linear-gradient(135deg, #f8fafc, #f1f5f9); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--dark); }
+    .data-table tr { transition: all var(--transition-base); }
+    .data-table tr:hover td { background: rgba(59,130,246,0.05); transform: scale(1.01); }
+
+    /* Sensor status indicator */
+    .sensor-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sensor-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .sensor-dot.online { background: #10b981; box-shadow: 0 0 5px #10b981; }
+    .sensor-dot.offline { background: #ef4444; }
+
+    /* Toast */
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--dark-soft);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1100;
+      transform: translateX(400px);
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      font-weight: 500;
+    }
+    .toast-notification.show { transform: translateX(0); }
+    .toast-notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .toast-notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .toast-notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    /* Refresh button */
+    .refresh-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all var(--transition-base);
+    }
+    .refresh-btn:hover { background: var(--bg-light); transform: rotate(180deg); }
+
+    /* Menu toggle mobile */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1500;
+      box-shadow: var(--shadow-lg);
+      transition: all var(--transition-base);
+    }
+    .menu-toggle:hover { transform: scale(1.05); }
+
+    /* Last update */
+    .last-update {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 20px;
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      .stat-card h2 { font-size: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; width: 100%; padding: 20px; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card h2 { font-size: 38px; }
+    }
+
+    @media (max-width: 640px) {
+      .panel { padding: 16px; }
+      .data-table th, .data-table td { padding: 10px 8px; font-size: 12px; }
+    }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+      .panel { background: rgba(30,41,59,0.96); border-color: #334155; }
+      .status-pill { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+      .data-table th { background: #1e293b; color: #cbd5e1; }
+      .data-table td { border-bottom-color: #334155; }
+      .topbar h1 { background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; background-clip: text; }
+      .refresh-btn:hover { background: #334155; }
+    }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <img src="img/logo.png" alt="Logo" />
-        <span>Monitoring<strong>IoT</strong></span>
+
+<div class="bg-animation" id="bgAnimation"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-icon"><i class="fas fa-microchip"></i></div>
+      <span>Monitoring<strong>IoT</strong></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" id="nav-dashboard">📊 Dashboard</a>
+      <a href="sensor.html" id="nav-sensor" class="active">🌡️ Sensor</a>
+      <a href="riwayat.html" id="nav-riwayat">📈 Riwayat</a>
+      <a href="pengaturan.html" id="nav-pengaturan">⚙️ Pengaturan</a>
+      <a href="#" id="logoutBtn" class="logout">↩️ Keluar</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1><i class="fas fa-microchip"></i> Data Sensor</h1>
+        <p class="muted">Pantau semua sensor IoT yang terhubung secara realtime</p>
       </div>
-      <nav class="sidebar-nav">
-        <a href="dashboard.html" id="nav-dashboard">📊 Dashboard</a>
-        <a href="sensor.html" id="nav-sensor" class="active">🌡 Sensor</a>
-        <a href="riwayat.html" id="nav-riwayat">📈 Riwayat</a>
-        <a href="pengaturan.html" id="nav-pengaturan">⚙ Pengaturan</a>
-        <a href="#" id="logoutBtn" class="logout">↩ Keluar</a>
-      </nav>
-    </aside>
+      <div class="topbar-actions">
+        <div class="status-pill" id="connStatusBtn">
+          <span class="dot online"></span> <span id="connectionStatus">Terhubung</span>
+        </div>
+        <div class="avatar" id="userAvatarBtn">A</div>
+      </div>
+    </header>
 
-    <!-- Main -->
-    <main class="main">
-      <header class="topbar">
-        <div>
-          <h1>Data Sensor</h1>
-          <p class="muted">Pantau semua sensor IoT yang terhubung secara realtime.</p>
-        </div>
-        <div class="topbar-actions">
-          <div class="status-pill"><span class="dot online"></span> Terhubung</div>
-          <div class="avatar">U</div>
-        </div>
-      </header>
+    <!-- Sensor Cards Grid -->
+    <section class="stats-grid">
+      <div class="stat-card gradient-1">
+        <i class="fas fa-thermometer-half stat-icon"></i>
+        <small><i class="fas fa-temperature-high"></i> Suhu Ruangan</small>
+        <h2 id="statSuhu">--<span style="font-size:16px;">°C</span></h2>
+        <span class="trend" id="trendSuhu">↑ Stabil</span>
+      </div>
+      <div class="stat-card gradient-4">
+        <i class="fas fa-sun stat-icon"></i>
+        <small><i class="fas fa-lightbulb"></i> Intensitas Cahaya</small>
+        <h2 id="statCahaya">--<span style="font-size:16px;">lx</span></h2>
+        <span class="trend" id="trendCahaya">↑ Cerah</span>
+      </div>
+      <div class="stat-card gradient-relay">
+        <i class="fas fa-microchip stat-icon"></i>
+        <small><i class="fas fa-plug"></i> Relay 1 - Lampu Utama</small>
+        <h2 id="relayStatus">--</h2>
+        <span class="trend" id="relayTrend">Status</span>
+      </div>
+    </section>
 
-      <!-- Sensor Cards Grid -->
-      <section class="stats-grid">
-        <div class="stat-card gradient-1">
-          <small>Suhu</small>
-          <h2 id="statSuhu">--<span style="font-size:16px;">°C</span></h2>
-          <span class="trend up">↑ Stabil</span>
+    <!-- Daftar Sensor -->
+    <section class="panel">
+      <div class="panel-header">
+        <h3><i class="fas fa-list"></i> Daftar Perangkat Sensor</h3>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <span class="badge-pill info" id="sensorCount">Memuat...</span>
+          <button class="refresh-btn" id="refreshSensorBtn" title="Refresh Data">
+            <i class="fas fa-sync-alt"></i>
+          </button>
         </div>
-        <div class="stat-card gradient-4">
-          <small>Cahaya</small>
-          <h2 id="statCahaya">--<span style="font-size:16px;">lx</span></h2>
-          <span class="trend up">↑ Cerah</span>
-        </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
-          <small>Relay 1</small>
-          <h2 id="relayStatus">--</h2>
-          <span class="trend" id="relayTrend">Status</span>
-        </div>
-      </section>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th><i class="fas fa-microchip"></i> Perangkat</th>
+              <th><i class="fas fa-chart-simple"></i> Tipe Sensor</th>
+              <th><i class="fas fa-chart-line"></i> Nilai Terkini</th>
+              <th><i class="fas fa-clock"></i> Terakhir Update</th>
+              <th><i class="fas fa-circle"></i> Status</th>
+            </tr>
+          </thead>
+          <tbody id="sensorTable">
+            <tr><td colspan="5" style="text-align:center;color:var(--gray);"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="last-update" id="lastUpdateInfo">
+        <i class="fas fa-sync-alt"></i> Terakhir diperbarui: <span id="lastUpdateTime">--:--:--</span>
+      </div>
+    </section>
+  </main>
+</div>
 
-      <!-- Daftar Sensor -->
-      <section class="panel">
-        <div class="panel-header">
-          <h3>Daftar Perangkat Sensor</h3>
-          <span class="badge-pill ok" id="sensorCount">Memuat...</span>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Perangkat</th>
-                <th>Tipe Sensor</th>
-                <th>Nilai Terkini</th>
-                <th>Terakhir Update</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="sensorTable">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted)">Memuat data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
+<button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+<div id="toastContainer"></div>
 
-  <script type="module">
-    import { auth, db } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-    // Auth guard
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = 'login.html';
-    });
-
-    // Logout handler
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (confirm('🚪 Apakah Anda yakin ingin keluar? Semua sesi akan berakhir.')) {
-          try {
-            await signOut(auth);
-            window.location.href = 'login.html';
-          } catch (err) {
-            console.error('Logout error:', err);
-            window.location.href = 'login.html';
-          }
-        }
-      });
+<script>
+  // ============================================================
+  // BACKGROUND ANIMATION
+  // ============================================================
+  function createBubbles() {
+    const bg = document.getElementById('bgAnimation');
+    for (let i = 0; i < 25; i++) {
+      const bubble = document.createElement('span');
+      const size = Math.random() * 60 + 10;
+      bubble.style.width = size + 'px';
+      bubble.style.height = size + 'px';
+      bubble.style.left = Math.random() * 100 + '%';
+      bubble.style.animationDuration = Math.random() * 15 + 10 + 's';
+      bubble.style.animationDelay = Math.random() * 10 + 's';
+      bg.appendChild(bubble);
     }
+  }
+  createBubbles();
 
-    // Fungsi update UI
-    function populateSensorTable(data) {
-      const tbody = document.getElementById('sensorTable');
-      const now = new Date().toLocaleTimeString('id-ID');
-      const sensors = [
-        { perangkat: 'ESP32 - Ruang 1', tipe: 'DHT22', nilai: `${data.suhu ?? '--'}°C / ${data.kelembapan ?? '--'}%`, status: 'OK' },
-        { perangkat: 'ESP32 - Ruang 2', tipe: 'BMP280', nilai: `${data.tekanan ?? '--'} hPa`, status: 'OK' },
-        { perangkat: 'ESP8266 - Outdoor', tipe: 'LDR', nilai: `${data.cahaya ?? '--'} lx`, status: 'OK' },
-        { perangkat: 'ESP32 - Pintu', tipe: 'PIR', nilai: 'Offline', status: 'ERR' },
-      ];
-      document.getElementById('sensorCount').textContent = `${sensors.length} Sensor`;
-      tbody.innerHTML = sensors.map(s => `
-        <tr>
-          <td>${s.perangkat}</td>
-          <td>${s.tipe}</td>
-          <td>${s.nilai}</td>
-          <td>${now}</td>
-          <td><span class="badge-pill ${s.status === 'OK' ? 'ok' : 'err'}">${s.status}</span></td>
-        </tr>
-      `).join('');
+  // ============================================================
+  // TOAST NOTIFICATION
+  // ============================================================
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    const icons = { success: 'fa-check-circle', info: 'fa-info-circle', warning: 'fa-exclamation-circle' };
+    toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // ============================================================
+  // DATA SENSOR SIMULATION (FIREBASE INTEGRATION READY)
+  // ============================================================
+  
+  // Simulasi data sensor
+  let currentSuhu = 26.5;
+  let currentCahaya = 350;
+  let currentRelayState = false;
+  
+  // Data perangkat sensor
+  const sensorDevices = [
+    { id: 1, perangkat: 'ESP32 - Ruang Tamu', tipe: 'DHT22', icon: '🌡️', unit: '°C / %' },
+    { id: 2, perangkat: 'ESP32 - Ruang Kantor', tipe: 'BMP280', icon: '📊', unit: 'hPa' },
+    { id: 3, perangkat: 'ESP8266 - Outdoor', tipe: 'LDR', icon: '☀️', unit: 'lx' },
+    { id: 4, perangkat: 'ESP32 - Kamar Utama', tipe: 'DHT11', icon: '🌡️', unit: '°C / %' },
+    { id: 5, perangkat: 'ESP32 - Pintu Depan', tipe: 'PIR', icon: '🚪', unit: 'Deteksi' },
+    { id: 6, perangkat: 'ESP8266 - Garasi', tipe: 'Ultrasonik', icon: '📏', unit: 'cm' },
+  ];
+  
+  function updateLastUpdateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = now.toLocaleDateString('id-ID');
+    const updateEl = document.getElementById('lastUpdateTime');
+    if (updateEl) updateEl.textContent = `${dateStr} ${timeStr}`;
+  }
+  
+  function updateStats() {
+    const suhuEl = document.getElementById('statSuhu');
+    const cahayaEl = document.getElementById('statCahaya');
+    const trendSuhu = document.getElementById('trendSuhu');
+    const trendCahaya = document.getElementById('trendCahaya');
+    const relayStatusEl = document.getElementById('relayStatus');
+    const relayTrendEl = document.getElementById('relayTrend');
+    
+    if (suhuEl) suhuEl.innerHTML = `${currentSuhu.toFixed(1)}<span style="font-size:16px;">°C</span>`;
+    if (cahayaEl) cahayaEl.innerHTML = `${currentCahaya}<span style="font-size:16px;">lx</span>`;
+    
+    if (trendSuhu) {
+      if (currentSuhu > 30) trendSuhu.innerHTML = '🔥 Panas';
+      else if (currentSuhu > 25) trendSuhu.innerHTML = '✅ Normal';
+      else trendSuhu.innerHTML = '❄️ Dingin';
     }
-
-    function updateStats(data) {
-      // Suhu
-      const suhu = data.suhu ?? '--';
-      document.getElementById('statSuhu').textContent = suhu + '°C';
+    
+    if (trendCahaya) {
+      if (currentCahaya > 500) trendCahaya.innerHTML = '☀️ Sangat Terang';
+      else if (currentCahaya > 300) trendCahaya.innerHTML = '🌤️ Terang';
+      else if (currentCahaya > 100) trendCahaya.innerHTML = '🌙 Redup';
+      else trendCahaya.innerHTML = '🌑 Gelap';
+    }
+    
+    if (relayStatusEl) {
+      relayStatusEl.innerHTML = currentRelayState ? '🟢 ON' : '🔴 OFF';
+      relayStatusEl.style.color = currentRelayState ? '#10b981' : '#ef4444';
+    }
+    if (relayTrendEl) {
+      relayTrendEl.innerHTML = currentRelayState ? '✓ Menyala' : '✗ Mati';
+    }
+  }
+  
+  function getSensorValue(device) {
+    switch(device.tipe) {
+      case 'DHT22':
+      case 'DHT11':
+        return `${currentSuhu.toFixed(1)}°C / ${Math.floor(50 + Math.random() * 30)}%`;
+      case 'BMP280':
+        return `${Math.floor(980 + Math.random() * 40)} hPa`;
+      case 'LDR':
+        return `${currentCahaya} lx`;
+      case 'PIR':
+        return Math.random() > 0.7 ? '🚶 Terdeteksi' : '☑️ Aman';
+      case 'Ultrasonik':
+        return `${Math.floor(50 + Math.random() * 150)} cm`;
+      default:
+        return '--';
+    }
+  }
+  
+  function getSensorStatus(device) {
+    if (device.tipe === 'PIR') {
+      return Math.random() > 0.7 ? 'WARN' : 'OK';
+    }
+    if (device.tipe === 'Ultrasonik') {
+      return Math.random() > 0.9 ? 'WARN' : 'OK';
+    }
+    return 'OK';
+  }
+  
+  function populateSensorTable() {
+    const tbody = document.getElementById('sensorTable');
+    const now = new Date().toLocaleTimeString('id-ID');
+    
+    const devicesWithData = sensorDevices.map(device => ({
+      ...device,
+      nilai: getSensorValue(device),
+      status: getSensorStatus(device),
+      lastUpdate: now
+    }));
+    
+    const onlineCount = devicesWithData.filter(d => d.status === 'OK').length;
+    const sensorCountEl = document.getElementById('sensorCount');
+    if (sensorCountEl) {
+      sensorCountEl.innerHTML = `<i class="fas fa-wifi"></i> ${onlineCount}/${devicesWithData.length} Online`;
+    }
+    
+    tbody.innerHTML = devicesWithData.map(device => `
+      <tr style="animation: fadeInUp 0.3s ease">
+        <td>
+          <div class="sensor-status">
+            <span class="sensor-dot ${device.status === 'OK' ? 'online' : 'offline'}"></span>
+            <strong>${device.icon} ${device.perangkat}</strong>
+          </div>
+        </td>
+        <td>${device.tipe}</td>
+        <td><span class="badge-pill info">${device.nilai}</span></td>
+        <td>${device.lastUpdate}</td>
+        <td>
+          <span class="badge-pill ${device.status === 'OK' ? 'ok' : device.status === 'WARN' ? 'warning' : 'err'}">
+            ${device.status === 'OK' ? '✅ Online' : device.status === 'WARN' ? '⚠️ Warning' : '❌ Offline'}
+          </span>
+        </td>
+      </tr>
+    `).join('');
+  }
+  
+  // Simulasi update data real-time setiap 5 detik
+  let intervalId = setInterval(() => {
+    currentSuhu = +(24 + Math.random() * 6).toFixed(1);
+    currentCahaya = Math.floor(280 + Math.random() * 140);
+    currentRelayState = (currentSuhu > 28 || currentCahaya < 300);
+    
+    updateStats();
+    populateSensorTable();
+    updateLastUpdateTime();
+  }, 5000);
+  
+  // ============================================================
+  // EVENT HANDLERS
+  // ============================================================
+  
+  // Refresh button
+  const refreshBtn = document.getElementById('refreshSensorBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      currentSuhu = +(24 + Math.random() * 6).toFixed(1);
+      currentCahaya = Math.floor(280 + Math.random() * 140);
+      currentRelayState = (currentSuhu > 28 || currentCahaya < 300);
+      updateStats();
+      populateSensorTable();
+      updateLastUpdateTime();
+      showToast('Data sensor berhasil diperbarui!', 'success');
       
-      // Cahaya
-      const cahaya = data.cahaya ?? '--';
-      document.getElementById('statCahaya').textContent = cahaya + ' lx';
-    }
-
-    // Fallback dummy data
-    async function loadDummy() {
-      try {
-        const res = await fetch('data/dummy.json');
-        const data = await res.json();
-        updateStats(data);
-        populateSensorTable(data);
-      } catch (e) {
-        console.warn('Tidak bisa memuat data dummy:', e);
-      }
-    }
-
-    // Dengarkan data dari Firebase
-    const sensorRef = ref(db, 'sensor');
-    onValue(sensorRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        updateStats(data);
-        populateSensorTable(data);
-      } else {
-        loadDummy();
-      }
-    }, () => {
-      // Error: fallback ke dummy
-      loadDummy();
+      // Animasi refresh
+      const icon = refreshBtn.querySelector('i');
+      icon.style.animation = 'none';
+      icon.offsetHeight;
+      icon.style.animation = 'rotateIcon 0.5s ease';
     });
-
-    // Dengarkan Relay dari Firebase
-    const relayRef = ref(db, 'relay/1');
-    onValue(relayRef, (snapshot) => {
-      const val = snapshot.val();
-      const isOn = val === 1 || val === true || val === '1';
-      
-      const relayStatusEl = document.getElementById('relayStatus');
-      const relayTrendEl = document.getElementById('relayTrend');
-      
-      if (relayStatusEl) {
-        relayStatusEl.textContent = isOn ? '🟢 ON' : '🔴 OFF';
-        relayStatusEl.style.color = isOn ? '#10b981' : '#ef4444';
-      }
-      if (relayTrendEl) {
-        relayTrendEl.textContent = isOn ? '✓ Menyala' : '✗ Mati';
-        relayTrendEl.className = 'trend ' + (isOn ? 'up' : 'down');
-      }
-    }, () => {
-      // Error fallback
-      const relayStatusEl = document.getElementById('relayStatus');
-      if (relayStatusEl) relayStatusEl.textContent = '🔴 OFF';
+  }
+  
+  // Mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
     });
-  </script>
+  }
+  
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('🚪 Apakah Anda yakin ingin keluar?')) {
+        sessionStorage.clear();
+        showToast('Logout berhasil', 'info');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 500);
+      }
+    });
+  }
+  
+  // Connection status button
+  const connBtn = document.getElementById('connStatusBtn');
+  if (connBtn) {
+    connBtn.addEventListener('click', () => {
+      showToast('✅ Koneksi aman - Terhubung ke server MQTT', 'success');
+    });
+  }
+  
+  // User avatar
+  const avatarBtn = document.getElementById('userAvatarBtn');
+  if (avatarBtn) {
+    avatarBtn.addEventListener('click', () => {
+      showToast('👤 User: Administrator | Role: Super Admin', 'info');
+    });
+  }
+  
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+      if (sidebar && !sidebar.contains(e.target) && !menuToggle?.contains(e.target) && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+  
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
+  updateStats();
+  populateSensorTable();
+  updateLastUpdateTime();
+  showToast('📡 Data sensor siap dipantau', 'info');
+  
+  // Check login session
+  if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+    // Untuk demo, kita bisa bypass atau redirect
+    // sessionStorage.setItem('isLoggedIn', 'true');
+    // window.location.href = 'login.html';
+  }
+  
+  console.log('✨ Halaman Sensor siap dengan animasi premium!');
+</script>
 </body>
 </html>
